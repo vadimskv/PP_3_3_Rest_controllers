@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.service.UserService;
+import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
 import java.security.Principal;
 import java.util.Arrays;
@@ -19,12 +19,10 @@ import java.util.List;
 @Controller
 public class UserController {
     private final UserService userService;
-    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserController(UserService userService, RoleRepository roleRepository) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
-        this.roleRepository = roleRepository;
     }
 
     @GetMapping("/admin")
@@ -54,14 +52,14 @@ public class UserController {
     @GetMapping("/admin/new")
     public String newUser(Model model) {
         model.addAttribute("user", new User());
-        List<Role> roles = roleRepository.findAll();
+        List<Role> roles = userService.findAll();
         model.addAttribute("roles", roles);
         return "new";
     }
 
     @PostMapping("/admin/save")
     public String addUser(@ModelAttribute("user") User user, @RequestParam("roles") Long[] roles) {
-        List<Role> selectedRoles = roleRepository.findAllById(Arrays.asList(roles));
+        List<Role> selectedRoles = userService.findAllById(Arrays.asList(roles));
         user.setRoles(selectedRoles);
         userService.saveUser(user);
         return "redirect:/admin";
@@ -73,7 +71,7 @@ public class UserController {
             return "redirect:/admin";
         }
         model.addAttribute("user", userService.findUserById(id));
-        List<Role> roles = roleRepository.findAll();
+        List<Role> roles = userService.findAll();
         model.addAttribute("roles", roles);
         return "edit";
     }
