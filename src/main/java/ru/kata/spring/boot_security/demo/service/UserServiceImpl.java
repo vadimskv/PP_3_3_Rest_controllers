@@ -15,7 +15,9 @@ import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,7 +35,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
+        return userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 
@@ -51,10 +53,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
+            throw new UsernameNotFoundException("User not found with username: " + email);
         }
         User user = optionalUser.get();
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
@@ -74,9 +76,17 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return userRepository.findAll();
     }
 
+    public boolean userIsAdmin(User user) {
+        return user.getRolesString().contains("ADMIN");
+    }
+
+    public boolean userIsUser(User user) {
+        return user.getRolesString().contains("USER");
+    }
+
     @Transactional
     public void saveUser(User user) {
-        Optional<User> optionalUserFromDB = userRepository.findByUsername(user.getUsername());
+        Optional<User> optionalUserFromDB = userRepository.findByEmail(user.getUsername());
         if (optionalUserFromDB.isPresent()) {
             throw new IllegalArgumentException("User with this username already exists");
         }
@@ -92,21 +102,14 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Transactional
-    public void updateUser(User updatedUser, List<Long> selectedRoleIds) {
-        User user = userRepository.findById(updatedUser.getId()).orElseThrow(() -> new IllegalArgumentException("User not found"));
-        user.setUsername(updatedUser.getUsername());
-        user.setEmail(updatedUser.getEmail());
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-            if (!updatedUser.getPassword().equals(user.getPassword())) {
-                user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-            }
+    public void updateUser(User userUpdate) {
+        User userNotUpdate = findByUsername(userUpdate.getEmail());
+        if (userUpdate.getPassword().isEmpty()) {
+            userUpdate.setPassword(userNotUpdate.getPassword());
+        } else if (!userNotUpdate.getPassword().equals(userUpdate.getPassword())) {
+            userUpdate.setPassword(passwordEncoder.encode(userUpdate.getPassword()));
         }
-        Set<Role> selectedRoles = new HashSet<>();
-        for (Long roleId : selectedRoleIds) {
-            roleRepository.findById(roleId).ifPresent(selectedRoles::add);
-        }
-        user.setRoles(selectedRoles);
-        userRepository.save(user);
+        userRepository.save(userUpdate);
     }
 
     @Transactional

@@ -1,17 +1,17 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -25,36 +25,47 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            request.getSession().invalidate();
+        }
+        return "redirect:/login";
+    }
+
+    @ModelAttribute
+    public void getInfo(Principal principal, Model model) {
+        model.addAttribute("allUsers", userService.allUsers());
+        String username = principal.getName();
+        User user = userService.findByUsername(username);
+        model.addAttribute("isAdmin", userService.userIsAdmin(user));
+        model.addAttribute("isUser", userService.userIsUser(user));
+        model.addAttribute("userInfo", user);
+
+    }
+
     @GetMapping("/admin")
-    public String findAll(Model model) {
-        model.addAttribute("admin", userService.allUsers());
+    public String getUsers() {
         return "admin";
     }
 
     @GetMapping("/user")
-    public String showUserProfile(Principal principal, Model model) {
-        String username = principal.getName();
-        User user = userService.findByUsername(username);
-        model.addAttribute("user", user);
+    public String showUserProfile() {
         return "user";
     }
 
-    @GetMapping("/admin/user")
-    public String getUserProfile(@RequestParam("id") Long userId, Model model) {
-        User user = userService.findById(userId);
-        if (user == null) {
-            return "redirect:/admin";
-        }
-        model.addAttribute("user", user);
-        return "user";
+    @GetMapping()
+    public String newUser() {
+        return "parts/admin/users_table/new";
     }
 
-    @GetMapping("/admin/new")
-    public String newUser(Model model) {
-        model.addAttribute("user", new User());
+
+    @ModelAttribute
+    public void newUser(Model model) {
+        model.addAttribute("new_user", new User());
         List<Role> roles = userService.findAll();
         model.addAttribute("roles", roles);
-        return "new";
     }
 
     @PostMapping("/admin/save")
@@ -65,25 +76,19 @@ public class UserController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/admin/edit")
-    public String editUser(@RequestParam(value = "id", required = false) Long id, Model model) {
-        if (id == null) {
-            return "redirect:/admin";
-        }
-        model.addAttribute("user", userService.findUserById(id));
-        List<Role> roles = userService.findAll();
-        model.addAttribute("roles", roles);
-        return "edit";
+    @GetMapping("/")
+    public String edit() {
+        return "parts/admin/users_table/users_table";
     }
 
-    @PostMapping("/admin/update")
-    public String updateUser(@ModelAttribute("user") User user,
-                             @RequestParam("selectedRoleIds") List<Long> selectedRoleIds) {
-        userService.updateUser(user, selectedRoleIds);
-        return "redirect:/admin";
+    @RequestMapping(value = "/admin/edit/{id}")
+    public String updateUser(@ModelAttribute("user") User updateUser) {
+        userService.updateUser(updateUser);
+        return "redirect:/admin/";
     }
 
-    @GetMapping("admin/remove")
+
+    @PostMapping("admin/delete")
     public String remove(@RequestParam(value = "id", required = false) Long id, Model model) {
         if (id == null) {
             return "redirect:/admin";
@@ -92,4 +97,6 @@ public class UserController {
         userService.deleteUser(id);
         return "redirect:/admin";
     }
+
+
 }

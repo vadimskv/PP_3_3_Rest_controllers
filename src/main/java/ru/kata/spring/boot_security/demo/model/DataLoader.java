@@ -32,11 +32,11 @@ public class DataLoader implements CommandLineRunner {
         roleRepository.save(adminRole);
         roleRepository.save(userRole);
 
-        User admin = new User("admin", passwordEncoder.encode("admin"));
-        admin.setRoles(new HashSet<>(List.of(adminRole)));
+        User admin = new User("admin", "admin", 35, passwordEncoder.encode("admin"), "admin@mail.ru");
+        admin.setRoles(new HashSet<>(List.of(adminRole, userRole)));
         userRepository.save(admin);
 
-        User user = new User("user", passwordEncoder.encode("user"));
+        User user = new User("user", "user", 30, passwordEncoder.encode("user"), "user@mail.ru");
         user.setRoles(new HashSet<>(List.of(userRole)));
         userRepository.save(user);
     }

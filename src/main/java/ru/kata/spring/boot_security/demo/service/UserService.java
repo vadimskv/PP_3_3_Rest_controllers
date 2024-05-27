@@ -9,13 +9,26 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService {
     User findByUsername(String username);
+
     User findById(Long id);
+
     User findUserById(Long userId);
-    UserDetails loadUserByUsername(String username);
+
+    UserDetails loadUserByUsername(String email);
+
     List<User> allUsers();
+
     List<Role> findAll();
+
     List<Role> findAllById(Iterable<Long> ids);
+
+    boolean userIsAdmin(User user);
+
+    boolean userIsUser(User user);
+
     void saveUser(User user);
-    void updateUser(User updatedUser, List<Long> selectedRoleIds);
+
+    public void updateUser(User userUpdate);
+
     void deleteUser(Long userId);
 }

@@ -1,0 +1,24 @@
+<div class="col-9" th:fragment="user_navs(userInfo)">
+    <div class="tab-content" id="v-pills-tabContent">
+
+        <div class="tab-pane fade show active" id="admin-panel" role="tabpanel" aria-labelledby="v-pills-home-tab">
+
+            <div class="container mt-3" style="width: 82vw">
+                <h1>User information-page</h1>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="usersTable" role="tabpanel" aria-labelledby="home-tab">
+
+                        <!--ТАБЛИЦА-->
+
+                        <div th:insert="parts/user/user_info_table/user_info_table :: user_info_table(userInfo=${userInfo})"></div>
+
+                        <!--ТАБЛИЦА КОНЕЦ-->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
