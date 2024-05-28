@@ -8,38 +8,39 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
           integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
-    <style>
-        .nav-pills .nav-link {
-            width: 100%;
-            text-align: left;
-        }
-    </style>
-</head>
-<body style="background-color: #f8f9fa">
 
-<div th:insert="parts/navbar :: navbar(${userInfo.email}, ${userInfo.getRolesString()})"></div>
+</head>
+<body class="bg-light" style="height: 100vh;">
+
+
+    <div th:insert="parts/navbar :: navbar(${userInfo.email}, ${userInfo.getRolesString()})"></div>
 
 <!--НАВИГАЦИЯ 1-->
+<section class="container-fluid h-100">
+    <div class="row h-100">
+        <div class="col-2 d-flex flex-column p-0 h-100 bg-white">
+            <div class="nav flex-column nav-pills mt-3 col-12 bg-white p-0 h-100" id="v-pills-tab"
+                 role="tablist" aria-orientation="vertical">
 
-<div class="row">
-    <div class="col-2">
-        <div class="nav flex-column nav-pills" style="background-color: #ffffff; height: 100vh" id="v-pills-tab"
-             role="tablist" aria-orientation="vertical">
-            <div class="mt-3">
                 <a th:if="${isAdmin}" class="nav-link active" id="admin-tab" href="/admin" role="tab"
-                   aria-controls="home" aria-selected="true">Admin</a>
+                   aria-controls="home" data-toggle="pill" aria-selected="true">
+                    <div> Admin</div>
+                </a>
                 <a th:if="${isUser}" class="nav-link" id="v-pills-profile-tab" href="/user" role="tab"
-                   aria-controls="v-pills-profile" aria-selected="false">User</a>
+                   aria-controls="v-pills-profile" aria-selected="false">
+                    <div>User</div>
+                </a>
+
             </div>
         </div>
+        <!--АДМИН ПАНЕЛЬ И НАВИГАЦИЯ 2-->
+
+        <div class="col-10 pr-4 pl-4 pt-3" th:insert="parts/admin/admin_navs :: admin_navs">
+
+        <!--АДМИН ПАНЕЛЬ КОНЕЦ-->
+        </div>
     </div>
-    <!--АДМИН ПАНЕЛЬ И НАВИГАЦИЯ 2-->
-
-    <div th:insert="parts/admin/admin_navs :: admin_navs"></div>
-
-    <!--АДМИН ПАНЕЛЬ КОНЕЦ-->
-
-</div>
+</section>
 
 <!--НАВИГАЦИЯ 1 КОНЕЦ-->
 

@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Transactional
     public void updateUser(User userUpdate) {
-        User userNotUpdate = findByUsername(userUpdate.getEmail());
+        User userNotUpdate = findById(userUpdate.getId());
         if (userUpdate.getPassword().isEmpty()) {
             userUpdate.setPassword(userNotUpdate.getPassword());
         } else if (!userNotUpdate.getPassword().equals(userUpdate.getPassword())) {
