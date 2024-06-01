@@ -16,9 +16,4 @@ public class UserController {
     public String user() {
         return "user";
     }
-
-    @PostMapping("/admin/save")
-    public String addUser() {
-        return "redirect:/admin";
-    }
 }

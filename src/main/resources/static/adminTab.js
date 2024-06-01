@@ -1,6 +1,6 @@
+getData();
 getUserInfo();
 showTab();
-getData();
 setFormRole();
 setFormRole1();
 setDeleteFormRole();
@@ -47,15 +47,6 @@ function setFormRole1() {
     })
 }
 
-function clearFormData() {
-    document.getElementById("firstname_n").value = "";
-    document.getElementById("lastname_n").value = "";
-    document.getElementById("age_n").value = "";
-    document.getElementById("email_n").value = "";
-    document.getElementById("password_n").value = "";
-}
-
-
 function editDataCall(id) {
     // call get user details by id API
     fetch("http://localhost:8080/admin/getUser/" + id, {
@@ -67,59 +58,53 @@ function editDataCall(id) {
 
 
 function addForm() {
-    fetch("http://localhost:8080/admin/getRoles")
-        .then(res => res.json())
-        .then(response => {
-            console.log("Получены роли:", response);
+    fetch("http://localhost:8080/admin/getRoles"
+    ).then(
+        (res) => res.json()
+    ).then((response) => {
+        console.log("Получены роли:", response);
 
-            let select = document.getElementById("roles_n");
-            let selected = [...select.options]
-                .filter(option => option.selected)
-                .map(option => option.value);
+        let select = document.getElementById("roles_n");
+        let selected = [...select.options]
+            .filter(option => option.selected)
+            .map(option => option.value);
 
-            let filteredRoles = [];
+        let filteredRoles = [];
 
-            if (selected.length === 1 && selected.includes(response[0].name)) {
-                filteredRoles.push(response[0]);
-            }
+        if (selected.length === 1 && selected.includes(response[0].name)) {
+            filteredRoles.push(response[0])
+        }
 
-            if (selected.length === 1 && selected.includes(response[1].name)) {
-                filteredRoles.push(response[1]);
-            }
+        if (selected.length === 1 && selected.includes(response[1].name)) {
+            filteredRoles.push(response[1])
+        }
 
-            if (selected.length === 2 && selected.includes(response[0].name) && selected.includes(response[1].name)) {
-                filteredRoles.push(response[0]);
-                filteredRoles.push(response[1]);
-            }
+        if (selected.length === 2 && selected.includes(response[0].name) && selected.includes(response[1].name)) {
+            filteredRoles.push(response[0])
+            filteredRoles.push(response[1])
+        }
 
-            let user = {
-                firstname: document.getElementById("firstname_n").value,
-                lastname: document.getElementById("lastname_n").value,
-                age: document.getElementById("age_n").value,
-                email: document.getElementById("email_n").value,
-                password: document.getElementById("password_n").value,
-                roles: filteredRoles
-            };
+        let user = {
+            firstname: document.getElementById("firstname_n").value,
+            lastname: document.getElementById("lastname_n").value,
+            age: document.getElementById("age_n").value,
+            email: document.getElementById("email_n").value,
+            password: document.getElementById("password_n").value,
+            roles: filteredRoles
+        }
 
-            fetch("http://localhost:8080/admin/addUser", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(user)
-            }).then(r => {
-                    console.log("До очистки формы данных:");
-                    clearFormData();
-                    console.log("После очистки формы данных:");
-                    getData(); // Обновляем таблицу после успешного добавления пользователя
-                    console.log("После обновления таблицы:");
-                    // window.location.href = '/admin'; // Перенаправляем на страницу админ-панели
-                    console.error("Failed to add user");
-                }
-            )
-
-
-        });
+        fetch("http://localhost:8080/admin/addUser", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(user)
+        })
+            .then(() => {
+                getData(); // Обновляем таблицу после успешного добавления пользователя
+                location.href = "/admin"
+            })
+    })
 }
 
 
@@ -168,7 +153,7 @@ function submitForm() {
             },
             body: JSON.stringify(user)
         })
-            .then((response) => {
+            .then(() => {
                 getData(); // reload the table
                 getUserInfo(); // reload the panel
             })
