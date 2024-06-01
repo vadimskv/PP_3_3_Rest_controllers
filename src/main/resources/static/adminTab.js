@@ -102,7 +102,7 @@ function addForm() {
         })
             .then(() => {
                 getData(); // Обновляем таблицу после успешного добавления пользователя
-                location.href = "/admin"
+                document.querySelector("a#home-tab").click();
             })
     })
 }
