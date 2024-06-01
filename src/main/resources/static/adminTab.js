@@ -56,6 +56,15 @@ function editDataCall(id) {
     })
 }
 
+function clearForm() {
+    // Очищаем поля формы
+    document.getElementById("firstname_n").value = "";
+    document.getElementById("lastname_n").value = "";
+    document.getElementById("age_n").value = "";
+    document.getElementById("email_n").value = "";
+    document.getElementById("password_n").value = "";
+    document.getElementById("roles_n").value = "";
+}
 
 function addForm() {
     fetch("http://localhost:8080/admin/getRoles"
@@ -102,6 +111,7 @@ function addForm() {
         })
             .then(() => {
                 getData(); // Обновляем таблицу после успешного добавления пользователя
+                clearForm();
                 document.querySelector("a#home-tab").click();
             })
     })
