@@ -221,7 +221,7 @@ function getData() {
             tmpData += "<td>" + user.age + "</td>";
             tmpData += "<td>" + user.email + "</td>";
             tmpData += "<td>" + uniqueNames + "</td>";
-            tmpData += "<td><button class='btn btn-primary' data-toggle='modal' data-target='#edit' onclick='editDataCall(" + user.id + ")'>Edit</button></td>";
+            tmpData += "<td><button class='btn btn-info' data-toggle='modal' data-target='#edit' onclick='editDataCall(" + user.id + ")'>Edit</button></td>";
             tmpData += "<td><button class='btn btn-danger' data-toggle='modal' data-target='#delete' onclick='deleteDataCall(" + user.id + ")'>Delete</button></td>";
 
             tmpData += "</tr>";
